@@ -1,0 +1,82 @@
+🏗️ Project Steps Summary
+
+🗂️ Step 1 — Create Database
+CREATE DATABASE customerDB;
+USE customerDB;
+
+------------------------------------------------------------
+
+🛠️ Step 2 — Create Table
+CREATE TABLE CustomerTransaction(
+    TransactionID INT PRIMARY KEY,
+    CustomerName VARCHAR(100),
+    Email VARCHAR(100),
+    PhoneNumber VARCHAR(20),
+    PurchaseAmount DECIMAL(10,2),
+    PurchaseDate DATE,
+    PurchaseMethod VARCHAR(50),
+    Status VARCHAR(50)
+);
+
+------------------------------------------------------------
+
+🔍 Step 3 — Preview Data
+SELECT * FROM CustomerTransaction;
+
+------------------------------------------------------------
+
+🧹 Data Cleaning Operations
+
+📧 1. Fill Missing Emails
+UPDATE CustomerTransaction
+SET Email = "unknown@example.com"
+WHERE Email = "";
+
+------------------------------------------------------------
+
+🔁 2. Remove Duplicate Phone Numbers
+DELETE FROM CustomerTransaction
+WHERE TransactionID NOT IN (
+    SELECT * FROM (
+        SELECT MIN(TransactionID)
+        FROM CustomerTransaction
+        GROUP BY PhoneNumber
+    ) AS Temp
+);
+
+------------------------------------------------------------
+
+🛠️ 3. Fix Email Format
+UPDATE CustomerTransaction
+SET Email = CONCAT(Email, ".com")
+WHERE Email NOT LIKE "%.com";
+
+------------------------------------------------------------
+
+💳 4. Standardize Payment Methods
+UPDATE CustomerTransaction
+SET PurchaseMethod = "Credit Card"
+WHERE PurchaseMethod LIKE "%card%";
+
+------------------------------------------------------------
+
+❌ 5. Remove Failed Transactions
+DELETE FROM CustomerTransaction
+WHERE Status = "failed";
+
+------------------------------------------------------------
+
+➖ 6. Replace Negative Purchase Amounts
+UPDATE CustomerTransaction
+SET PurchaseAmount = NULL
+WHERE PurchaseAmount < 0;
+
+------------------------------------------------------------
+
+🔤 7. Format Customer Names
+UPDATE CustomerTransaction
+SET CustomerName = CONCAT(
+    UPPER(LEFT(CustomerName,1)),
+    LOWER(SUBSTRING(CustomerName,2))
+);
+
